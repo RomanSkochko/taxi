@@ -1,0 +1,36 @@
+server:
+  port: 8080
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres:5432/taxi_db
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    enabled: false
+  data:
+    redis:
+      host: redis
+      port: 6379
+      password: redisPass
+      database: 0
+  cache:
+    type: redis
+    redis:
+      time-to-live-basic: 1800000  # 30 min
+      time-to-live-max: 10800000 #3 hours
+      cache-null-values: false
+    cache-names:
+      - userDetails
+application:
+  security:
+    jwt:
+      secret-key: 8126E4C020202553733DC05E0C99C35F945A27F2AD8345054E02E6BC223C102628D07B4CAF658B0AB65740B7A96F3C441AF91703EC66BD2076DDBC4C665B9506
+      expiration: 86400000 # 1 a day
+      refresh-token:
+        expiration: 604800000 # 7 days
