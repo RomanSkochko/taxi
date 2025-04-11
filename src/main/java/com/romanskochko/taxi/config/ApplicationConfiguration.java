@@ -1,6 +1,5 @@
 package com.romanskochko.taxi.config;
 
-import com.romanskochko.taxi.core.exception.GlobalExceptionHandler;
 import com.romanskochko.taxi.features.auth.service.AuthenticationService;
 import com.romanskochko.taxi.security.filter.JwtAuthenticationFilter;
 import com.romanskochko.taxi.security.service.JwtService;
@@ -13,6 +12,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 
 @Configuration
 public class ApplicationConfiguration {
@@ -26,8 +26,8 @@ public class ApplicationConfiguration {
     public JwtAuthenticationFilter jwtAuthenticationFilter(UserDetailsService userDetailsService,
                                                            JwtService jwtService,
                                                            AuthenticationService authService,
-                                                           GlobalExceptionHandler globalExceptionHandler) {
-        return new JwtAuthenticationFilter(userDetailsService, jwtService, authService, globalExceptionHandler);
+                                                           AuthenticationEntryPoint authenticationEntryPoint) {
+        return new JwtAuthenticationFilter(userDetailsService, jwtService, authService, authenticationEntryPoint);
     }
 
     @Bean

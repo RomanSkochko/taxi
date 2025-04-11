@@ -1,9 +1,10 @@
 package com.romanskochko.taxi.security.filter;
 
-import com.romanskochko.taxi.core.exception.GlobalExceptionHandler;
 import com.romanskochko.taxi.features.auth.service.AuthenticationService;
 import com.romanskochko.taxi.security.config.SecurityConfiguration;
+import com.romanskochko.taxi.security.exception.JwtAuthenticationException;
 import com.romanskochko.taxi.security.service.JwtService;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,6 +18,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -40,7 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     UserDetailsService userService;
     JwtService jwtService;
     AuthenticationService authenticationService;
-    GlobalExceptionHandler globalExceptionHandler;
+    AuthenticationEntryPoint authenticationEntryPoint;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -59,9 +61,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     .ifPresent(auth -> ((UsernamePasswordAuthenticationToken) auth)
                             .setDetails(new WebAuthenticationDetailsSource().buildDetails(request)));
             filterChain.doFilter(request, response);
-        } catch (Exception e) {
+        } catch (JwtException e) {
             LOG.error("JwtAuthenticationFilter Exception:", e);
-            globalExceptionHandler.handleJwtException(response, e);
+            authenticationEntryPoint.commence(request, response, new JwtAuthenticationException(e.getMessage()));
         }
     }
 
