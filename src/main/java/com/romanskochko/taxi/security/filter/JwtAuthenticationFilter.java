@@ -2,7 +2,6 @@ package com.romanskochko.taxi.security.filter;
 
 import com.romanskochko.taxi.features.auth.service.AuthenticationService;
 import com.romanskochko.taxi.security.config.SecurityConfiguration;
-import com.romanskochko.taxi.security.exception.JwtAuthenticationException;
 import com.romanskochko.taxi.security.service.JwtService;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
@@ -15,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -63,7 +63,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } catch (JwtException e) {
             LOG.error("JwtAuthenticationFilter Exception:", e);
-            authenticationEntryPoint.commence(request, response, new JwtAuthenticationException(e.getMessage()));
+            authenticationEntryPoint.commence(request, response, new AuthenticationException(e.getMessage()) {});
         }
     }
 
