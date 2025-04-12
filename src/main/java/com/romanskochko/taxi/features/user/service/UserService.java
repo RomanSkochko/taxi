@@ -1,6 +1,7 @@
 package com.romanskochko.taxi.features.user.service;
 
 import com.romanskochko.taxi.config.CacheManager;
+import com.romanskochko.taxi.core.exception.CustomApplicationException;
 import com.romanskochko.taxi.core.model.enums.Role;
 import com.romanskochko.taxi.core.service.BaseService;
 import com.romanskochko.taxi.features.user.dto.UserCreateDto;
@@ -16,7 +17,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,6 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.Principal;
 import java.util.Set;
 
+import static com.romanskochko.taxi.core.exception.ErrorCode.PASSWORD_MISMATCH;
+import static com.romanskochko.taxi.core.exception.ErrorCode.SAME_PASSWORD;
+import static com.romanskochko.taxi.core.exception.ErrorCode.WRONG_PASSWORD;
 import static lombok.AccessLevel.PRIVATE;
 
 @Getter
@@ -75,13 +78,13 @@ public class UserService extends BaseService<User, String> {
         User user = (User) userDetails;
 
         if (!encoder.matches(currentPassword, user.getPassword())) {
-            throw new AccessDeniedException("Wrong password"); //TODO make custom exceptions
+            throw CustomApplicationException.of("Wrong password", WRONG_PASSWORD);
         }
         if (currentPassword.equals(newPassword)) {
-            throw new IllegalArgumentException("Same password as before");
+            throw CustomApplicationException.of("Same password", SAME_PASSWORD);
         }
         if (!newPassword.equals(confirmPassword)) {
-            throw new IllegalArgumentException("Passwords do not match");
+            throw CustomApplicationException.of("Passwords do not match", PASSWORD_MISMATCH);
         }
         user.setPassword(encoder.encode(newPassword));
         repository.save(user);
