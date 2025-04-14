@@ -12,7 +12,6 @@ This is the backend API for a taxi/ride-sharing service application, built with 
 * **Prerequisites:** JDK 21+, Maven 3+, Docker & Docker Compose.
 * **Installation:** Clone the repository (`git clone https://github.com/RomanSkochko/taxi.git && cd taxi`) and build (`mvn clean install -DskipTests`).
 * **Running (Docker - Recommended):** Ensure Docker is running and execute `docker-compose up --build` from the project root. This starts the application (port 8080), PostgreSQL (port 5432), and Redis (port 6379).
-* **Running (Local Maven):** Ensure local PostgreSQL and Redis instances are running and configured in `src/main/resources/application-local.yml`. Then run `mvn spring-boot:run -Dspring-boot.run.profiles=local`. The API will be available at `http://localhost:8080`.
 
 **Configuration:** Key settings (database connection, Redis details, JWT secret, cache TTLs) are in `application.yml` (default/Docker) and can be overridden for local development in `application-local.yml`.
 
