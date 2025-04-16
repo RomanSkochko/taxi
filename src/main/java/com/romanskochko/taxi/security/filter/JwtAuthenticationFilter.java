@@ -4,12 +4,12 @@ import com.romanskochko.taxi.features.auth.service.AuthenticationService;
 import com.romanskochko.taxi.security.config.SecurityConfiguration;
 import com.romanskochko.taxi.security.service.JwtService;
 import io.jsonwebtoken.JwtException;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
@@ -20,6 +20,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -27,22 +30,33 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-
-import static lombok.AccessLevel.PRIVATE;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 @RequiredArgsConstructor
-@FieldDefaults(level = PRIVATE, makeFinal = true)
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    private static final List<String> WHITE_LIST_URL = Arrays.stream(SecurityConfiguration.WHITE_LIST_URL)
-            .map(url -> url.replace("**", ""))
-            .toList();
+
     private static final Logger LOG = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
-    UserDetailsService userService;
-    JwtService jwtService;
-    AuthenticationService authenticationService;
-    AuthenticationEntryPoint authenticationEntryPoint;
+    private final UserDetailsService userService;
+    private final JwtService jwtService;
+    private final AuthenticationService authenticationService;
+    private final AuthenticationEntryPoint authenticationEntryPoint;
+
+    private RequestMatcher whiteListMatcher;
+
+    @PostConstruct
+    public void init() {
+        List<RequestMatcher> matchers = Stream.concat(
+                        Arrays.stream(SecurityConfiguration.APP_WHITE_LIST_URL),
+                        Arrays.stream(SecurityConfiguration.OPEN_API_LIST_URL)
+                )
+                .map(AntPathRequestMatcher::new)
+                .collect(Collectors.toList());
+
+        whiteListMatcher = new OrRequestMatcher(matchers);
+    }
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -73,6 +87,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String userPhone = jwtService.extractUserPhone(jwt);
         UserDetails userDetails = userService.loadUserByUsername(userPhone);
+
         if (userDetails != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             authenticationService.authenticateUser(userDetails);
         }
@@ -80,9 +95,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        String path = request.getServletPath();
-        return WHITE_LIST_URL.stream().anyMatch(path::startsWith);
+        return whiteListMatcher.matches(request);
     }
+
 
 }
 
