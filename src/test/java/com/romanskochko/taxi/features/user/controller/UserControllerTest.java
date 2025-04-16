@@ -122,7 +122,7 @@ public class UserControllerTest extends AbstractIntegrationTest {
         // Given
         UserCreateDto newUser = UserCreateDto.builder()
                 .name("New User")
-                .password("newUserPass")
+                .password("newUserPass1")
                 .email("newuser@example.com")
                 .phone("+9876543210")
                 .build();
