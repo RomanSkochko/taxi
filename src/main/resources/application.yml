@@ -3,6 +3,7 @@ server:
 spring:
   datasource:
     url: jdbc:postgresql://postgres:5432/taxi_db
+    #Change and hide username and password in the end
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
