@@ -24,9 +24,17 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @RequiredArgsConstructor
 @Configuration
 public class SecurityConfiguration {
-    public static final String[] WHITE_LIST_URL = {
+    public static final String[] APP_WHITE_LIST_URL = {
             "/api/v1/auth/**",
-            "/api/v1/users/registration"
+            "/api/v1/users/registration",
+    };
+    public static final String[] OPEN_API_LIST_URL = {
+            "/v3/api-docs",
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html",
+            "/swagger-resources",
+            "/swagger-resources/**"
     };
 
     @Bean
@@ -40,7 +48,8 @@ public class SecurityConfiguration {
                 )
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registry -> {
-                    registry.requestMatchers(WHITE_LIST_URL).permitAll();
+                    registry.requestMatchers(APP_WHITE_LIST_URL).permitAll();
+                    registry.requestMatchers(OPEN_API_LIST_URL).permitAll();
                     registry.requestMatchers("/api/v1/users/**").hasRole("USER");
                     registry.requestMatchers("/api/v1/drivers/**", "/api/v1/car-brands", "/api/v1/car-types").hasRole("DRIVER");
                     registry.anyRequest().authenticated();
