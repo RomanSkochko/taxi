@@ -24,7 +24,11 @@ public class UserCreateDto {
     String name;
 
     @NotBlank(message = "Password is required")
-    @Size(min = 6, message = "Password must be at least 6 characters")
+    @Size(min = 6, max = 30)
+    @Pattern(
+            regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}$",
+            message = "Password must contain at least one letter and one number"
+    )
     String password;
 
     @Email(message = "Invalid email format")
