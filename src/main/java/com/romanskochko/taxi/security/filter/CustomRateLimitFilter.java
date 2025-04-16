@@ -5,15 +5,18 @@ import io.github.bucket4j.Bucket;
 import io.github.bucket4j.BucketConfiguration;
 import io.github.bucket4j.ConsumptionProbe;
 import io.github.bucket4j.distributed.proxy.ProxyManager;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -22,20 +25,26 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
-
-import static lombok.AccessLevel.PRIVATE;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-@FieldDefaults(level = PRIVATE, makeFinal = true)
 public class CustomRateLimitFilter extends OncePerRequestFilter {
-    private static final List<String> SHOULD_FILTER_LIST_URL = Arrays.stream(SecurityConfiguration.WHITE_LIST_URL)
-            .map(url -> url.replace("**", ""))
-            .toList();
     private static final Logger LOG = LoggerFactory.getLogger(CustomRateLimitFilter.class);
 
-    Supplier<BucketConfiguration> bucketConfiguration;
-    ProxyManager<String> proxyManager;
+    private final Supplier<BucketConfiguration> bucketConfiguration;
+    private final ProxyManager<String> proxyManager;
+
+    private RequestMatcher whiteListMatcher;
+
+    @PostConstruct
+    public void init() {
+        List<RequestMatcher> matchers = Arrays.stream(SecurityConfiguration.OPEN_API_LIST_URL)
+                .map(AntPathRequestMatcher::new)
+                .collect(Collectors.toList());
+        this.whiteListMatcher = new OrRequestMatcher(matchers);
+        LOG.info("CustomRateLimitFilter initialized. whiteListMatcher created.");
+    }
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -59,7 +68,6 @@ public class CustomRateLimitFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
-        String path = request.getRequestURI();
-        return SHOULD_FILTER_LIST_URL.stream().noneMatch(path::startsWith);
+        return whiteListMatcher.matches(request);
     }
 }
