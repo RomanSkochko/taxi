@@ -98,12 +98,12 @@ public class RedisConfig {
     public Supplier<BucketConfiguration> bucketConfiguration() {
         return () -> BucketConfiguration.builder()
                 .addLimit(BandwidthBuilder.builder()
-                        .capacity(10L)
+                        .capacity(50L)
                         .refillIntervally(10L, Duration.ofMinutes(1))
                         .build())
                 .addLimit(BandwidthBuilder.builder()
-                        .capacity(2L)
-                        .refillIntervally(2L, Duration.ofSeconds(1))
+                        .capacity(5L)
+                        .refillIntervally(5L, Duration.ofSeconds(1))
                         .build())
                 .build();
     }
