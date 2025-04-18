@@ -30,15 +30,15 @@ import java.util.stream.Collectors;
 
 import static lombok.AccessLevel.PRIVATE;
 
+@Entity
+@Table(name = "users")
+@DynamicUpdate
 @Getter
 @Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = PRIVATE)
-@Table(name = "users")
-@Entity
-@DynamicUpdate
 public class User extends BaseEntity implements UserDetails {
 
     @Column(name = "user_name", nullable = false)

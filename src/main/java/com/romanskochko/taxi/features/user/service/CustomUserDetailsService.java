@@ -28,7 +28,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String phone) {
         return getRepository()
                 .findUserAuthByPhone(phone)
-                .map(mapper::toUserFromAuthView)
+                .map(mapper::fromAuthView)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with phone: " + phone));
     }
 

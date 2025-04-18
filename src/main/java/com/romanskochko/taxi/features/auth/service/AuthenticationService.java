@@ -10,10 +10,10 @@ import org.springframework.stereotype.Service;
 
 import static lombok.AccessLevel.PRIVATE;
 
+@Service
 @Getter
 @RequiredArgsConstructor
 @FieldDefaults(level = PRIVATE, makeFinal = true)
-@Service
 public class AuthenticationService {
 
     public void authenticateUser(UserDetails userDetails) {

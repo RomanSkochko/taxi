@@ -14,9 +14,9 @@ import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
 
 @Mapper(componentModel = SPRING)
 public interface UserMapper {
-    UserDto toUserDtoFromUser(User user);
-    User toUserFromCreateDto(UserCreateDto userCreateDto);
-    User toUserFromAuthView(UserAuthView userAuthView);
+    UserDto toUserDto(User user);
+    User toUser(UserCreateDto userCreateDto);
+    User fromAuthView(UserAuthView userAuthView);
 
     @BeanMapping(nullValuePropertyMappingStrategy = IGNORE)
     @Mapping(target = "authorities", ignore = true)

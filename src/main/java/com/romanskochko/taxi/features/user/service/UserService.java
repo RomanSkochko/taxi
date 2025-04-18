@@ -31,10 +31,10 @@ import static com.romanskochko.taxi.core.exception.ErrorCode.SAME_PASSWORD;
 import static com.romanskochko.taxi.core.exception.ErrorCode.WRONG_PASSWORD;
 import static lombok.AccessLevel.PRIVATE;
 
+@Service
 @Getter
 @RequiredArgsConstructor
 @FieldDefaults(level = PRIVATE, makeFinal = true)
-@Service
 public class UserService extends BaseService<User, String> {
     UserRepository repository;
     UserMapper mapper;
@@ -46,19 +46,19 @@ public class UserService extends BaseService<User, String> {
     @Transactional(readOnly = true)
     public UserDto findUserById(String id) {
         User user = findById(id);
-        return mapper.toUserDtoFromUser(user);
+        return mapper.toUserDto(user);
     }
 
     @Transactional
     public UserDto create(UserCreateDto dto) {
-        User user = mapper.toUserFromCreateDto(dto);
+        User user = mapper.toUser(dto);
         user.setEmail(user.getEmail().toLowerCase());
         user.setPassword(encoder.encode(user.getPassword()));
         user.setRoles(Set.of(Role.USER));
         User savedUser = repository.save(user);
 
         eventPublisher.publishEvent(new UserCreatedEvent(user.getId()));
-        return mapper.toUserDtoFromUser(savedUser);
+        return mapper.toUserDto(savedUser);
     }
 
     @Transactional
@@ -68,7 +68,7 @@ public class UserService extends BaseService<User, String> {
         cacheManager.evictUserById(found.getId());
         dto.setId(userId);
         mapper.update(dto, found);
-        return mapper.toUserDtoFromUser(found);
+        return mapper.toUserDto(found);
     }
 
     @Transactional

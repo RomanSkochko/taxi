@@ -14,14 +14,14 @@ import lombok.experimental.SuperBuilder;
 
 import static lombok.AccessLevel.PRIVATE;
 
+@Entity
+@Table(name = "user_photos")
 @Getter
 @Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = PRIVATE)
-@Table(name = "user_photos")
-@Entity
 public class UserPhoto extends BaseEntity {
 
     @Column(name = "user_photo", columnDefinition = "TEXT")
