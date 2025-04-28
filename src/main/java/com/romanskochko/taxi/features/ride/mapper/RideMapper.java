@@ -5,6 +5,7 @@ import com.romanskochko.taxi.features.ride.dto.RideDto;
 import com.romanskochko.taxi.features.ride.entity.Ride;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
@@ -13,6 +14,8 @@ import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
 
 @Mapper(componentModel = SPRING)
 public interface RideMapper {
+
+    @Mapping(target = "passengerProfileId", source = "passengerProfile.id")
     @BeanMapping(nullValuePropertyMappingStrategy = IGNORE)
     RideDto toDto(Ride ride);
 

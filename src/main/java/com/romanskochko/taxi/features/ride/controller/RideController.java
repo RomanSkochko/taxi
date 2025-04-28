@@ -1,5 +1,6 @@
 package com.romanskochko.taxi.features.ride.controller;
 
+import com.romanskochko.taxi.core.model.dto.PageResponse;
 import com.romanskochko.taxi.features.ride.dto.RideCreateDto;
 import com.romanskochko.taxi.features.ride.dto.RideDto;
 import com.romanskochko.taxi.features.ride.dto.RideEstimateDto;
@@ -33,7 +34,7 @@ public class RideController implements RideApi {
     RideService service;
 
     @GetMapping(ESTIMATE)
-    public RideEstimateDto getRideById(@Valid RideEstimateParams params) {
+    public RideEstimateDto getRideEstimate(@Valid RideEstimateParams params) {
         return service.getEstimate(params);
     }
 
@@ -44,16 +45,19 @@ public class RideController implements RideApi {
         return service.create(dto, principal);
     }
 
+    @PreAuthorize("authentication != null && authentication.principal != null")
     @GetMapping(FIND_BY_ID)
     public RideDto getRideById(@PathVariable String id, Principal principal) {
         return service.getById(id, principal);
     }
 
+    @PreAuthorize("authentication != null && authentication.principal != null")
     @GetMapping(GET_MY_RIDES_AS_PASSENGER)
-    public Page<RideListDto> getMyPassengerRides(@RequestParam(defaultValue = "0") int page,
-                                                 @RequestParam(defaultValue = "10") int size,
-                                                 Principal principal) {
-        return service.getPassengerRides(page, size, principal);
+    public PageResponse<RideListDto> getMyPassengerRides(@RequestParam(defaultValue = "0") int page,
+                                                         @RequestParam(defaultValue = "5") int size,
+                                                         Principal principal) {
+        Page<RideListDto> ridesPage = service.getPassengerRides(page, size, principal);
+        return PageResponse.fromPage(ridesPage);
     }
 
     @GetMapping(GET_MY_RIDES_AS_DRIVER)

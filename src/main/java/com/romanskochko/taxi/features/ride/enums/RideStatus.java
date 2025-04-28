@@ -1,7 +1,7 @@
 package com.romanskochko.taxi.features.ride.enums;
 
 public enum RideStatus {
-    LOOKING_FOR_DRIVER,
+    CREATED,
     DRIVER_ASSIGNED,
     IN_PROGRESS,
     COMPLETED,

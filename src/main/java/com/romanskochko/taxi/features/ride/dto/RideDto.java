@@ -20,8 +20,8 @@ import static lombok.AccessLevel.PRIVATE;
 @FieldDefaults(level = PRIVATE)
 public class RideDto {
     String id;
-    String passengerId;
-    String driverId;
+    String passengerProfileId;
+    String driverProfileId;
 //    Location pickupLocation;
 //    Location dropoffLocation;
     OffsetDateTime createTime;
