@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
 
     private static HttpStatus getHttpStatus(CustomApplicationException ex) {
         return switch (ex.getCode()) {
-            case WRONG_PASSWORD -> HttpStatus.FORBIDDEN;
+            case WRONG_PASSWORD, ACCESS_DENIED -> HttpStatus.FORBIDDEN;
             case SAME_PASSWORD, PASSWORD_MISMATCH -> HttpStatus.BAD_REQUEST;
             default -> HttpStatus.INTERNAL_SERVER_ERROR;
         };

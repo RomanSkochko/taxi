@@ -16,7 +16,8 @@ public enum ErrorCode {
     SAME_PASSWORD("same_password_as_before"),
     PASSWORD_MISMATCH("passwords_do_not_match"),
 
-    RESOURCE_NOT_FOUND("Resource not found");
+    RESOURCE_NOT_FOUND("Resource_not_found"),
+    ACCESS_DENIED("access_denied");
 
     String value;
 

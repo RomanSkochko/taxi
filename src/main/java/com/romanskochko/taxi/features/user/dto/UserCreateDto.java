@@ -7,11 +7,13 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
 import static lombok.AccessLevel.PRIVATE;
 
+@ToString
 @Getter
 @Setter
 @SuperBuilder
